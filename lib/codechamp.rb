@@ -1,12 +1,13 @@
 require "pry"
 require "httparty"
-require "./github"
+require "codechamp/github"
 # require "/codechamp/version"
 module CodeChamp
     class App
         def initialize
-      @results = []
+        @response = []
         end
+        
         def prompt(message, regex)
             puts message
             choice = gets.chomp
@@ -17,6 +18,7 @@ module CodeChamp
         end
         choice
         end
+        
         def authorize_github
             oauth_token = prompt("Enter your OAuth Token: ", 
                             /[a-z0-9]{4,50}/)
@@ -24,24 +26,21 @@ module CodeChamp
             @github = Github.new(oauth_token)
             # binding.pry
         end
+        
         def contributor_stats
-        result = []
             org_name = prompt("Enter username: ",
                             /^[a-z0-9\-]{4,30}$/i)
             repo_name = prompt("Enter repository: ",
                             /^[a-z0-9\-]{4,30}$/i)
-            all_contributions = @github.get_contributions(org_name, repo_name)
-        user_name = all_contributions["author"]["login"]
-        puts "#{user_name}" #testing to see if im on the right track
+            
 
-        # user1 = all_contributions.first
-        # user1_name = user1["author"]["login"]
-        # @results.push(user1_name)
-        # weeks = user1["weeks"]
-        # stats = @github.get_data(weeks)
-        # stats.delete("w")
-        # @results.push(stats)
-        # puts = "#{@results}"
+            # @response = @github.get_contributions(org_name, repo_name)
+        
+        end
+
+        def return_stats
+            printf "%-20s %-20s %-20s%s\n", "Username","Additions","Deletions","Changes"
+            printf "%-20s %-20s %-20s %s\n", user_name,result["a"],result["d"],result["c"]
         end
     end
 end
