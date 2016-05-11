@@ -1,30 +1,32 @@
 require "pry"
 
 module CodeChamp
-  class Github
+  class GitHub
     include HTTParty
     base_uri "https://api.github.com"
 
-    def initialize(oauth)
+    def initialize(oauth_token)
       @headers = {
         "Authorization" => "token #{oauth_token}",
         "User-Agent"    => "HTTParty"
       }
-      end
-      @result = {}
     end
 
     def get_contributions(org, repo)
-      response = Github.get("/repos/#{owner}/#{repo}/stats/contributors", headers: @headers)
-        response.each do |user|
-          user_name = user["author"]["login"]
-          result = Hash.new(0)
-
-        user["weeks"].each do |hash|
-            hash.each do |key, value|
-            result[key] += value.to_i
-          end
+      response = GitHub.get("/repos/#{org}/#{repo}/stats/contributors", headers: @headers)
+      totals = []
+      response.each do |user|
+        result = Hash.new(0)
+        user_name = user["author"]["login"]
+      user["weeks"].each do |week|
+          week.each do |type, contributions|
+          result[type] += contributions.to_i
         end
+    end
+      user_info = [user_name, result]
+      totals.push(user_info)
+    end
+      totals
     end
   end
 end
